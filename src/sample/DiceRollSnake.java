@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -72,18 +73,32 @@ public class DiceRollSnake extends Application {
             root.setPrefSize( (width * Tile_Size), ((height* Tile_Size)+80)); /* dynamic, extra +80 row to add user buttons and stuff */
             root.getChildren().addAll(tileGroup); /*anything that we add to tileGroup gets added to main*/
 
-            for(int i = 0; i< height; i++)
-                    for(int j=0; j< width; j++){
+            for(int i = 0; i< height; i++) {
+                for (int j = 0; j < width; j++) {
 
-                            Tile tile = new Tile(Tile_Size, Tile_Size);   //creates a new tile using constructor from Tile class initialized with x,y
-                            tile.setTranslateX(j * Tile_Size);     //changes values 0,0 to 80, 80 to 160, 160 on the basis of i, j values
-                            tile.setTranslateY(i * Tile_Size);
-                            tileGroup.getChildren().add(tile);
-                    }
+                    Tile tile = new Tile(Tile_Size, Tile_Size);   //creates a new tile using constructor from Tile class initialized with x,y
+                    tile.setTranslateX(j * Tile_Size);     //changes values 0,0 to 80, 80 to 160, 160 on the basis of i, j values
+                    tile.setTranslateY(i * Tile_Size);
+                    tileGroup.getChildren().add(tile);
 
+                    cirPos[i][j] = j*(Tile_Size-40); //x coordinates
+                }
+
+            }
+
+            /*board positions output in console for building snake ladder logic*/
+
+            for(int i = 0; i< height; i++){
+
+                for(int j=0; j<width; j++){
+
+                    System.out.print(cirPos[i][j] + ", " + (i*40) + "  ");
+                }
+                System.out.println();
+            }
             /*create 2 circles*/
 
-            player1 = new Circle(40 );  //created object of circle shape
+            player1 = new Circle(30 );  //created object of circle shape
             player1.setId("player1");  //options to style things using style.css
             /*if not css*/
             player1.setFill(Color.AQUA);
@@ -93,9 +108,10 @@ public class DiceRollSnake extends Application {
             player1.setTranslateY(player1YPos);
 
 
-            player2 = new Circle(40 );   //created object of circle shape
+            player2 = new Circle(30 );   //created object of circle shape
             player2.setId("player1");  //options to style things using style.css
-            player2.setFill(Color.CHOCOLATE);
+            /*if not css*/
+            player2.setFill(Color.DARKBLUE);
             player2.getStyleClass().add("style.css");
             /*translate circle positions*/
             player2.setTranslateX(player2XPos);
@@ -118,6 +134,11 @@ public class DiceRollSnake extends Application {
                             translatePlayer(player1XPos, player1YPos, player1);
                             player1Turn = false;
                             player2Turn = true;  //to maintain alternate sequence
+                            /*1st ladder*/
+//                            if(player1XPos==280 && player1YPos ==760){
+//                                translatePlayer(player1XPos= 360, player1YPos = 360, player1 );  //120 to 1*80, 760 to - 5*80
+//                            }
+                            snakeLadderLogic(player1XPos, player1YPos, player1);
 
 
                         }
@@ -142,6 +163,10 @@ public class DiceRollSnake extends Application {
                             translatePlayer(player2XPos, player2YPos, player2);
                             player2Turn = false;
                             player1Turn = true;  //to maintain alternate sequence
+//                            if(player2XPos==280 && player2YPos ==760){
+//                                translatePlayer(player2XPos= 360, player2YPos = 360, player2 );  //120 to 1*80, 760 to - 5*80
+//                            }
+                            snakeLadderLogic(player2XPos, player2YPos, player2);
                         }
                     }
                 }
@@ -285,6 +310,60 @@ public class DiceRollSnake extends Application {
 
     }
 
+    private void snakeLadderLogic(int x, int y, Circle c){
+
+        /*ladder 1*/
+        if(x==280 && y ==760){
+            translatePlayer(x= 360, y = 360, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*ladder 2*/
+        if(x==520 && y ==680){
+            translatePlayer(x= 440, y = 360, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*ladder 3*/
+        if(x==680 && y ==680){
+            translatePlayer(x= 760, y = 440, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*ladder 4*/
+        if(x==120 && y ==600){
+            translatePlayer(x= 200, y = 360, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*ladder 5*/
+        if(x==40 && y ==440){
+            translatePlayer(x= 120, y = 200, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*ladder 6*/
+        if(x==520 && y ==360){
+            translatePlayer(x= 600, y = 120, c );  //120 to 1*80, 760 to - 5*80
+        }
+
+        /*snake 1*/
+        if(x==600 && y ==600){
+            translatePlayer(x= 760, y = 40, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*snake 2*/
+        if(x==280 && y ==520){
+            translatePlayer(x= 200, y = 40, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*snake 3*/
+        if(x==520 && y ==440){
+            translatePlayer(x= 360, y = 680, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*snake 4*/
+        if(x==200 && y ==440){
+            translatePlayer(x= 680, y = 520, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*snake 5*/
+        if(x==520 && y ==40){
+            translatePlayer(x= 760, y = 200, c );  //120 to 1*80, 760 to - 5*80
+        }
+        /*snake 6*/
+        if(x==360 && y ==40){
+            translatePlayer(x= 120, y = 440, c );  //120 to 1*80, 760 to - 5*80
+        }
+
+    }
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -294,6 +373,13 @@ public class DiceRollSnake extends Application {
         primaryStage.setTitle("Snake and Ladders");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+//        AnimationTimer timer = new AnimationTimer() {
+//            @Override
+//            public void handle(long l) {
+//
+//            }
+//        }
     }
 
 
