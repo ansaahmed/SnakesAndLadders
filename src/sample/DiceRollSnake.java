@@ -50,10 +50,10 @@ public class DiceRollSnake extends Application {
     public static int player1YPos =760; //game starts from bottom
     /*player 2 positions*/
     public static int player2XPos =40;
-    public static int player2YPos =740;
+    public static int player2YPos =760;
 
     /*player 1 positions*/
-    public boolean gameStart = false; //set to false as we want them to press start button to start game
+    public boolean gameStart = true; //set to false as we want them to press start button to start game
 
     public Button gameButton;
 
@@ -92,16 +92,19 @@ public class DiceRollSnake extends Application {
             player2.setTranslateY(player2YPos);
 
             /*creating buttons*/
-            Button button1 = new Button("Player1");
-            button1.setTranslateX(80);
-            button1.setTranslateY(820);   //calculations on basis of grid system of Java
-            button1.setOnAction(new EventHandler<ActionEvent>() {
+            Button buttonPlayer1 = new Button("Player1");
+            buttonPlayer1.setTranslateX(80);
+            buttonPlayer1.setTranslateY(820);   //calculations on basis of grid system of Java
+            buttonPlayer1.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     /*first check if we've started the game only then run code*/
                     if(gameStart){
                         if(player1Turn){
                             /*get the value from rand num generator and then print out text.. method*/
+
+                            getDiceValue();
+                            randResult.setText(String.valueOf(rand)); //what value is given by rand is set to randresult as it is a label
 
                         }
                     }
@@ -110,15 +113,17 @@ public class DiceRollSnake extends Application {
             }); //it will trigger circle 1 or 2 player to move, we use lambda expression to use the action on event
 
             //player 2 button
-            Button button2 = new Button("Player2");
-            button2.setTranslateX(700);
-            button2.setTranslateY(820);
-            button2.setOnAction(new EventHandler<ActionEvent>() {
+            Button buttonPlayer2 = new Button("Player2");
+            buttonPlayer2.setTranslateX(700);
+            buttonPlayer2.setTranslateY(820);
+            buttonPlayer2.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     if(gameStart){
                         if(player2Turn){
                             /*get the value from rand num generator and then print out text.. method*/
+                            getDiceValue();
+                            randResult.setText(String.valueOf(rand));
                         }
                     }
                 }
@@ -154,7 +159,7 @@ public class DiceRollSnake extends Application {
             randResult.setTranslateY(820);
 
             /*add image java.fx not awt*/
-            Image img = new Image("sl2.png");
+            Image img = new Image("sl2.png");   //sample/sl2.png
             ImageView bgImage = new ImageView(); //img view to show that image
             bgImage.setImage(img);
             bgImage.setFitHeight(800);
@@ -162,11 +167,16 @@ public class DiceRollSnake extends Application {
 
 
             /*add to tilegroup node gets added to pane*/
-            tileGroup.getChildren().addAll(player1, player2, bgImage, button1, button2, gameButton);
+            tileGroup.getChildren().addAll(bgImage, player1, player2, buttonPlayer1, buttonPlayer2, gameButton, randResult); //order matters to know which is in front of another
+            /*put background first and then add pawns*/
 
             return root;
     }
 
+    /*method for dice roll to get random number*/
+    public void getDiceValue(){
+        rand = (int)(Math.random()*6 +1);  //random gives random values from 0 to 1
+    }
     @Override
     public void start(Stage primaryStage) throws Exception{
         Scene scene = new Scene(createContent());
