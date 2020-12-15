@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,8 +12,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 public class DiceRollSnake extends Application {
 
@@ -52,8 +55,12 @@ public class DiceRollSnake extends Application {
     public static int player2XPos =40;
     public static int player2YPos =760;
 
+    /*for movement of pawns*/
+    public int posCir1 = 1;
+    public int posCir2 = 1;
+
     /*player 1 positions*/
-    public boolean gameStart = true; //set to false as we want them to press start button to start game
+    public boolean gameStart = false; //set to false as we want them to press start button to start game
 
     public Button gameButton;
 
@@ -78,6 +85,8 @@ public class DiceRollSnake extends Application {
 
             player1 = new Circle(40 );  //created object of circle shape
             player1.setId("player1");  //options to style things using style.css
+            /*if not css*/
+            player1.setFill(Color.AQUA);
             player1.getStyleClass().add("style.css");
             /*translate circle positions*/
             player1.setTranslateX(player1XPos);
@@ -86,6 +95,7 @@ public class DiceRollSnake extends Application {
 
             player2 = new Circle(40 );   //created object of circle shape
             player2.setId("player1");  //options to style things using style.css
+            player2.setFill(Color.CHOCOLATE);
             player2.getStyleClass().add("style.css");
             /*translate circle positions*/
             player2.setTranslateX(player2XPos);
@@ -102,9 +112,13 @@ public class DiceRollSnake extends Application {
                     if(gameStart){
                         if(player1Turn){
                             /*get the value from rand num generator and then print out text.. method*/
-
                             getDiceValue();
                             randResult.setText(String.valueOf(rand)); //what value is given by rand is set to randresult as it is a label
+                            movePlayer1();
+                            translatePlayer(player1XPos, player1YPos, player1);
+                            player1Turn = false;
+                            player2Turn = true;  //to maintain alternate sequence
+
 
                         }
                     }
@@ -124,6 +138,10 @@ public class DiceRollSnake extends Application {
                             /*get the value from rand num generator and then print out text.. method*/
                             getDiceValue();
                             randResult.setText(String.valueOf(rand));
+                            movePlayer2();
+                            translatePlayer(player2XPos, player2YPos, player2);
+                            player2Turn = false;
+                            player1Turn = true;  //to maintain alternate sequence
                         }
                     }
                 }
@@ -148,6 +166,7 @@ public class DiceRollSnake extends Application {
                         player1.setTranslateY(player1YPos);
                         player2.setTranslateX(player2XPos);
                         player2.setTranslateY(player2YPos);
+                        gameStart = true;
 
 
                 }
@@ -173,14 +192,105 @@ public class DiceRollSnake extends Application {
             return root;
     }
 
+
     /*method for dice roll to get random number*/
-    public void getDiceValue(){
+    private void getDiceValue(){
         rand = (int)(Math.random()*6 +1);  //random gives random values from 0 to 1
     }
+
+
+    /*method to move players using translate function later*/
+
+    private void movePlayer1(){
+
+        for(int i=0; i<rand; i++){ //will move as much as dice value stored in rand
+            /*use */
+            if(posCir1%2 == 1){
+                player1XPos += 80; //increment position by one tile
+            }
+            if(posCir1%2 == 0){
+                player1XPos -= 80; //decrement position by one tile as movement is up
+            }
+
+            if(player1XPos > 760 ){
+                player1YPos-=80;
+                player1XPos-=80;
+                posCir1++;
+            }
+
+            if(player1XPos < 40 ){
+                player1YPos-=80;
+                player1XPos+=80;
+                posCir1++;
+            }
+
+            /*player reaches 100 or not*/
+
+            if(player1XPos < 30 || player1YPos < 30){
+                player1XPos = 40;
+                player1YPos = 40; //so that it stays at 100
+                gameStart = false;
+                randResult.setText("Player 1  Won!");
+                gameButton.setText("Start Again");
+            }
+        }
+
+    }
+
+    private void movePlayer2(){
+
+        for(int i=0; i<rand; i++){ //will move as much as dice value stored in rand
+            /*use */
+            if(posCir2%2 == 1){
+                player2XPos += 80; //increment position by one tile
+            }
+            if(posCir2%2 == 0){
+                player2XPos -= 80; //decrement position by one tile as movement is up
+            }
+
+            if(player2XPos > 760 ){
+                player2YPos-=80;
+                player2XPos-=80;
+                posCir2++;
+            }
+
+            if(player2XPos < 40 ){
+                player2YPos-=80;
+                player2XPos+=80;
+                posCir2++;
+            }
+
+            /*player reaches 100 or not*/
+
+            if(player2XPos < 30 || player2YPos < 30){
+                player2XPos = 40;
+                player2YPos = 40; //so that it stays at 100
+                gameStart = false;
+                randResult.setText("Player 2  Won!");
+                gameButton.setText("Start Again");
+            }
+        }
+
+    }
+
+
+    /*translate movePlayer method with x, y positions and the node itself*/
+    private void translatePlayer(int x, int y, Circle c){
+
+        TranslateTransition  animate = new TranslateTransition(Duration.millis(1000), c);
+        animate.setToX(x);
+        animate.setToY(y);
+        animate.setAutoReverse(false);
+        animate.play(); //to play the animation
+
+    }
+
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         Scene scene = new Scene(createContent());
         //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml")); not creating application, creating game
+        scene.getStylesheets().add("sample/style.css");
         primaryStage.setTitle("Snake and Ladders");
         primaryStage.setScene(scene);
         primaryStage.show();
